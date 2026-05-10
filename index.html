@@ -73,9 +73,9 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 <script>
 (function(){
 var blocks=[
-{title:"PALABRAS",lines:["CARTERISTA","DESCUIDERO","TIMADOR","PERISTA","GALAFATE","FILATERO","CORTABOL-","SAS","CHULO","BIGARDO"]},
+{title:"PALABRAS",lines:["CARTERISTA","DESCUIDERO","TIMADOR","PERISTA","GALAFATE","FILATERO","CORTABOL-","\u00A0\u00A0SAS","CHULO","BIGARDO"]},
 {title:"AUTOR",lines:["EDUARDO","MENDOZA"]},
-{title:"TÍTULO",lines:["LA","INTRIGA","DEL","FUNERAL","INCONVE-","NIENTE"]}
+{title:"TÍTULO",lines:["LA","INTRIGA","DEL","FUNERAL","INCONVE-","\u00A0\u00A0NIENTE"]}
 ];
 var grid=document.getElementById("grid"),status=document.getElementById("status"),input=document.getElementById("letterInput"),finalBox=document.getElementById("finalBox");
 var cells=[],selected=null;
@@ -90,7 +90,7 @@ html+='<div class="line">';
 for(i=0;i<blocks[b].lines[l].length;i++){
 ch=blocks[b].lines[l].charAt(i);
 if(ch==="-"){html+='<div class="hyphen">-</div>';continue;}
-if(ch===" "){
+if(ch===" " || ch==="\u00A0"){
   html+='<div class="hyphen"></div>';
   continue;
 }
