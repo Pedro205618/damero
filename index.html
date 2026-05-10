@@ -157,6 +157,7 @@ if(typed===c.letter){solveLetter(typed);}else{markError(selected,typed);status.t
 clearSelected();
 selected=null;
 input.value="";
+input.blur();
 }
 grid.addEventListener("click",function(e){var el=e.target.closest(".cell");if(!el)return;selectCell(parseInt(el.getAttribute("data-id"),10));});
 input.addEventListener("input",function(){handleLetter(input.value);});
