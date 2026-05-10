@@ -90,6 +90,10 @@ html+='<div class="line">';
 for(i=0;i<blocks[b].lines[l].length;i++){
 ch=blocks[b].lines[l].charAt(i);
 if(ch==="-"){html+='<div class="hyphen">-</div>';continue;}
+if(ch===" "){
+  html+='<div class="hyphen"></div>';
+  continue;
+}
 cells.push({id:id,letter:ch,solved:false});
 html+='<div class="cell" data-id="'+id+'"></div>';
 id++;
