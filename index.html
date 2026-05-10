@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Damero literario</title>
+<style>
+body{margin:0;padding:16px;background:#f4efe6;box-sizing:border-box;font-family:Georgia,"Times New Roman",serif}
+#damero{max-width:820px;margin:0 auto;padding:20px;border:2px solid #9b7a4f;border-radius:18px;background:#f8f1df;color:#3e2d1f;box-shadow:0 10px 28px rgba(60,40,20,.18)}
+h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:0 0 18px;color:#6b5a48;font-style:italic}
+.block{margin:20px 0}.block-title{font-weight:700;color:#6f4f2c;margin:0 0 10px;letter-spacing:.04em}
+.line{
+  display:flex;
+  gap:4px;
+  margin:6px 0;
+  align-items:center;
+  max-width:100%;
+  overflow:visible;
+}.cell{width:36px;height:36px;border:1px solid rgba(90,66,41,.45);border-radius:7px;background:rgba(255,252,242,.9);display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:700;text-transform:uppercase;cursor:pointer;user-select:none;box-sizing:border-box}
+.cell.ok{background:#dceccf;border-color:#7c9c69;color:#314728}.cell.error{background:#f1b6a8;border-color:#b05a46;color:#5c1f16}.cell.flash{animation:pulse 1.8s ease}
+@keyframes pulse{0%{background:#bde2a8}100%{background:#dceccf}}
+.hyphen{width:22px;height:36px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:700;color:#6f4f2c}
+#status{margin-top:18px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.45);border:1px solid rgba(90,66,41,.25);text-align:center;font-weight:700;min-height:24px}
+#finalBox{margin-top:18px;padding:16px;border-radius:14px;background:rgba(226,241,215,.88);border:1px solid rgba(124,156,105,.5);display:none;line-height:1.45}
+.actions{margin-top:14px;display:flex;justify-content:center}button{border:1px solid #6f4f2c;background:linear-gradient(180deg,#a67b45,#7f5c34);color:#fff8e8;padding:9px 16px;border-radius:999px;font-family:Georgia,"Times New Roman",serif;font-weight:700;cursor:pointer}
+#letterInput{
+  position:fixed;
+  left:-1000px;
+  top:0;
+  width:1px;
+  height:1px;
+  opacity:0;
+}
+@media(max-width:640px){
+  body{padding:8px}
+  #damero{padding:10px}
+
+  .cell{
+    width:26px;
+    height:30px;
+    font-size:.9rem;
+    border-radius:6px;
+  }
+
+  .line{
+    gap:2px;
+  }
+
+  .hyphen{
+    width:14px;
+    height:30px;
+  }
+}
+@media(max-width:380px){.cell{width:25px;height:30px;font-size:.9rem}.line{gap:2px}}
+</style>
+</head>
+<body>
+<div id="damero">
+<h2>Damero literario</h2>
+<p class="sub">Pulsa una casilla y escribe una letra. Si aciertas, se completarán todas las letras iguales.</p>
+<div id="grid"></div>
+<div id="status">Elige una casilla vacía para empezar.</div>
+<div id="finalBox">
+<p><strong>¡Muy bien! Lo has conseguido.</strong></p>
+<p>En un momento del diálogo entre Ramoncito Valenzuela y la progre Cándida, esta le responde:</p>
+<p>“¡Jobar!, ¿y quién no? En sus buenos tiempos le conocíamos todos, bien a nuestro pesar. Cuando digo todos, me vengo a referir a los de mi gremio: carteristas, descuideros, timadores, peristas, galafates, filateros, cortabolsas, chulos, bigardos y, huelga decirlo, las que hacíamos la calle.”</p>
+</div>
+<div class="actions"><button id="resetBtn" type="button">Comenzar de nuevo</button></div>
+<input id="letterInput" maxlength="1" autocomplete="off" autocapitalize="characters">
+</div>
+<script>
+(function(){
+var blocks=[
+{title:"PALABRAS",lines:["CARTERISTA","DESCUIDERO","TIMADOR","PERISTA","GALAFATE","FILATERO","CORTABOL-","SAS","CHULO","BIGARDO"]},
+{title:"AUTOR",lines:["EDUARDO","MENDOZA"]},
+{title:"TÍTULO",lines:["LA","INTRIGA","DEL","FUNERAL","INCONVE-","NIENTE"]}
+];
+var grid=document.getElementById("grid"),status=document.getElementById("status"),input=document.getElementById("letterInput"),finalBox=document.getElementById("finalBox");
+var cells=[],selected=null;
+function norm(x){return (x||"").toUpperCase();}
+function build(){
+cells=[];selected=null;finalBox.style.display="none";status.textContent="Elige una casilla vacía para empezar.";
+var html="",id=0,b,l,i,ch;
+for(b=0;b<blocks.length;b++){
+html+='<div class="block"><div class="block-title">'+blocks[b].title+'</div>';
+for(l=0;l<blocks[b].lines.length;l++){
+html+='<div class="line">';
+for(i=0;i<blocks[b].lines[l].length;i++){
+ch=blocks[b].lines[l].charAt(i);
+if(ch==="-"){html+='<div class="hyphen">-</div>';continue;}
+cells.push({id:id,letter:ch,solved:false});
+html+='<div class="cell" data-id="'+id+'"></div>';
+id++;
+}
+html+='</div>';
+}
+html+='</div>';
+}
+grid.innerHTML=html;
+}
+function render(){
+var i,el;
+for(i=0;i<cells.length;i++){
+el=document.querySelector('.cell[data-id="'+cells[i].id+'"]');
+if(!el)continue;
+if(cells[i].solved){el.textContent=cells[i].letter;el.classList.add("ok");}
+else{el.textContent="";el.classList.remove("ok");}
+}
+}
+function isComplete(){for(var i=0;i<cells.length;i++){if(!cells[i].solved)return false;}return true;}
+function selectCell(id){
+var c=cells.find(function(x){return x.id===id;});
+if(!c||c.solved)return;
+selected=id;status.textContent="Escribe una letra.";input.value="";input.focus();
+}
+function markError(id,typed){
+var el=document.querySelector('.cell[data-id="'+id+'"]');if(!el)return;
+el.textContent=typed;el.classList.add("error");
+setTimeout(function(){el.classList.remove("error");el.textContent="";},2000);
+}
+function solveLetter(letter){
+var count=0,i,els,j;
+for(i=0;i<cells.length;i++){if(cells[i].letter===letter&&!cells[i].solved){cells[i].solved=true;count++;}}
+render();
+els=document.querySelectorAll(".cell.ok");
+for(j=0;j<els.length;j++){if(els[j].textContent===letter){els[j].classList.add("flash");(function(el){setTimeout(function(){el.classList.remove("flash");},1800);})(els[j]);}}
+status.textContent="Correcto: se han incorporado "+count+" letra"+(count===1?"":"s")+" "+letter+".";
+if(isComplete()){status.textContent="¡Muy bien! Lo has conseguido.";finalBox.style.display="block";}
+}
+function handleLetter(value){
+if(selected===null)return;
+var typed=norm(value);if(!typed)return;
+var c=cells.find(function(x){return x.id===selected;});if(!c)return;
+if(typed===c.letter){solveLetter(typed);}else{markError(selected,typed);status.textContent="Esa letra no corresponde a la casilla.";}
+selected=null;input.value="";
+}
+grid.addEventListener("click",function(e){var el=e.target.closest(".cell");if(!el)return;selectCell(parseInt(el.getAttribute("data-id"),10));});
+input.addEventListener("input",function(){handleLetter(input.value);});
+document.addEventListener("keydown",function(e){if(selected!==null&&e.key.length===1){handleLetter(e.key);}});
+document.getElementById("resetBtn").onclick=function(){build();render();};
+build();
+render();
+alert("Damero cargado");
+})();
+</script>
+</body>
+</html>
