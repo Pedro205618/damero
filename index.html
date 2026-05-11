@@ -80,7 +80,41 @@ var blocks=[
 ];
 var grid=document.getElementById("grid"),status=document.getElementById("status"),input=document.getElementById("letterInput"),finalBox=document.getElementById("finalBox");
 var cells=[],selected=null;
+var STORAGE_KEY = "damero_mendoza_progreso_v1";
 function norm(x){return (x||"").toUpperCase();}
+function saveProgress(){
+  var solved = [];
+
+  for(var i = 0; i < cells.length; i++){
+    if(cells[i].solved && solved.indexOf(cells[i].letter) === -1){
+      solved.push(cells[i].letter);
+    }
+  }
+
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(solved));
+  }catch(e){}
+}
+
+function loadProgress(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+
+    var solved = JSON.parse(raw);
+    if(Array.isArray(solved)){
+      return solved;
+    }
+  }catch(e){}
+
+  return [];
+}
+
+function clearProgress(){
+  try{
+    localStorage.removeItem(STORAGE_KEY);
+  }catch(e){}
+}
 function build(){
 cells=[];selected=null;finalBox.style.display="none";status.textContent="Elige una casilla vacía para empezar.";
 var html="",id=0,b,l,i,ch;
@@ -104,6 +138,15 @@ html+='</div>';
 html+='</div>';
 }
 grid.innerHTML=html;
+var saved = loadProgress();
+
+for(var s = 0; s < saved.length; s++){
+  for(var c = 0; c < cells.length; c++){
+    if(cells[c].letter === saved[s]){
+      cells[c].solved = true;
+    }
+  }
+}
 }
 function render(){
 var i,el;
@@ -143,7 +186,7 @@ setTimeout(function(){el.classList.remove("error");el.textContent="";},2000);
 function solveLetter(letter){
 var count=0,i,els,j;
 for(i=0;i<cells.length;i++){if(cells[i].letter===letter&&!cells[i].solved){cells[i].solved=true;count++;}}
-render();
+render();saveProgress();
 els=document.querySelectorAll(".cell.ok");
 for(j=0;j<els.length;j++){if(els[j].textContent===letter){els[j].classList.add("flash");(function(el){setTimeout(function(){el.classList.remove("flash");},1800);})(els[j]);}}
 status.textContent="Correcto: se han incorporado "+count+" letra"+(count===1?"":"s")+" "+letter+".";
@@ -162,10 +205,11 @@ input.blur();
 grid.addEventListener("click",function(e){var el=e.target.closest(".cell");if(!el)return;selectCell(parseInt(el.getAttribute("data-id"),10));});
 input.addEventListener("input",function(){handleLetter(input.value);});
 document.addEventListener("keydown",function(e){if(selected!==null&&e.key.length===1){handleLetter(e.key);}});
-document.getElementById("resetBtn").onclick=function(){build();render();};
-build();
-render();
-})();
+document.getElementById("resetBtn").onclick=function(){
+  clearProgress();
+  build();
+  render();
+};
 </script>
 </body>
 </html>
