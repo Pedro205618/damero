@@ -199,6 +199,17 @@ input.addEventListener("input",function(){handleLetter(input.value);});
 document.addEventListener("keydown",function(e){if(selected!==null&&e.key.length===1){handleLetter(e.key);}});
 document.getElementById("resetBtn").onclick=function(){build();render();};
 build();
+
+var saved = loadProgress();
+
+for(var s = 0; s < saved.length; s++){
+  for(var c = 0; c < cells.length; c++){
+    if(cells[c].letter === saved[s]){
+      cells[c].solved = true;
+    }
+  }
+}
+
 render();
 })();
 </script>
