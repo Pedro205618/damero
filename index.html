@@ -82,6 +82,39 @@ var grid=document.getElementById("grid"),status=document.getElementById("status"
 var cells=[],selected=null;
 var STORAGE_KEY="damero_mendoza_progreso_v1";
 function norm(x){return (x||"").toUpperCase();}
+function saveProgress(){
+  var solved = [];
+
+  for(var i = 0; i < cells.length; i++){
+    if(cells[i].solved && solved.indexOf(cells[i].letter) === -1){
+      solved.push(cells[i].letter);
+    }
+  }
+
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(solved));
+  }catch(e){}
+}
+
+function loadProgress(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+
+    var solved = JSON.parse(raw);
+    if(Array.isArray(solved)){
+      return solved;
+    }
+  }catch(e){}
+
+  return [];
+}
+
+function clearProgress(){
+  try{
+    localStorage.removeItem(STORAGE_KEY);
+  }catch(e){}
+}
 function build(){
 cells=[];selected=null;finalBox.style.display="none";status.textContent="Elige una casilla vacía para empezar.";
 var html="",id=0,b,l,i,ch;
