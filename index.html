@@ -80,6 +80,7 @@ var blocks=[
 ];
 var grid=document.getElementById("grid"),status=document.getElementById("status"),input=document.getElementById("letterInput"),finalBox=document.getElementById("finalBox");
 var cells=[],selected=null;
+var STORAGE_KEY="damero_mendoza_progreso_v1";
 function norm(x){return (x||"").toUpperCase();}
 function build(){
 cells=[];selected=null;finalBox.style.display="none";status.textContent="Elige una casilla vacía para empezar.";
