@@ -178,6 +178,7 @@ function solveLetter(letter){
 var count=0,i,els,j;
 for(i=0;i<cells.length;i++){if(cells[i].letter===letter&&!cells[i].solved){cells[i].solved=true;count++;}}
 render();
+saveProgress();
 els=document.querySelectorAll(".cell.ok");
 for(j=0;j<els.length;j++){if(els[j].textContent===letter){els[j].classList.add("flash");(function(el){setTimeout(function(){el.classList.remove("flash");},1800);})(els[j]);}}
 status.textContent="Correcto: se han incorporado "+count+" letra"+(count===1?"":"s")+" "+letter+".";
